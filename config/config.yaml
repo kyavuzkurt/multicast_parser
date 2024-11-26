@@ -1,8 +1,12 @@
 multicast_group: '224.0.0.1'
 multicast_port: 9000
-server_address: '192.168.1.101'
-buffer_size: 2048
+server_address: '192.168.0.101'
+buffer_size: 4096
 
 # Rigid Body Names
 rigid_body_names:
   - Robot_1
+  - Robot_2
+
+
+log_level: "INFO"

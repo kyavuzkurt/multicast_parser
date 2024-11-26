@@ -1,0 +1,24 @@
+<launch>
+    <!-- Argument for configuration file path -->
+    <arg name="config_file" default="$(find multicast_parser)/config/config.yaml" />
+
+    <!-- Launch the Multicast Listener Node -->
+    <node 
+        name="multicast_listener" 
+        pkg="multicast_parser" 
+        type="multicast_listener.py" 
+        output="screen">
+        <!-- Pass the config file as a parameter -->
+        <param name="config" value="$(arg config_file)" />
+    </node>
+
+    <!-- Launch the Data Parser Node -->
+    <node 
+        name="data_parser" 
+        pkg="multicast_parser" 
+        type="data_parser.py" 
+        output="screen">
+        <!-- Pass the config file as a parameter -->
+        <param name="config" value="$(arg config_file)" />
+    </node>
+</launch>
