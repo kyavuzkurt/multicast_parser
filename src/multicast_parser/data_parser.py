@@ -39,7 +39,21 @@ class MulticastDataParser:
                 'odom': rospy.Publisher(f'/multicast_parser/{rb}/odom', Odometry, queue_size=10)
             }
 
-        rospy.loginfo("Multicast Data Parser Node Initialized.")
+        # Construct detailed topic information
+        topics_info = ""
+        for rb in rigid_bodies:
+            topics_info += (
+                f"- Rigid Body: {rb}\n"
+                f"  - Pose Topic: /multicast_parser/{rb}/pose\n"
+                f"  - Ground Pose Topic: /multicast_parser/{rb}/ground_pose\n"
+                f"  - Odometry Topic: /multicast_parser/{rb}/odom\n"
+            )
+
+        # Enhanced logging with detailed topics
+        rospy.loginfo(
+            "Multicast Data Parser Node Initialized.\n"
+            f"Publishing rigid bodies: {rigid_bodies} to the following topics:\n{topics_info}"
+        )
 
     def load_config(self, config_path):
         try:
