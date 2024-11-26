@@ -1,8 +1,7 @@
 ## Multicast Parser
 
-WORK IN PROGRESS - DO NOT USE YET
 
-This is a ROS Noetic node that listens to a multicast server from Motive Tracker 2.0.2 and parses the data into a ROS topic.
+This is a ROS Noetic node that listens to a multicast server from Motive Tracker 2.0.2 and parses the data into a ROS topic. In my tests, Motive Tracker 2.0.2 is running on a Windows machine and the ROS nodes are running on a Ubuntu 20.04 Docker container. 
 
 ## Usage
 
@@ -22,6 +21,7 @@ Parameters:
 - server_address: The server address to listen to. (In my case it is the IP address of the machine running the Motive Tracker 2.0.2)
 - buffer_size: The buffer size for the multicast listener.
 - rigid_body_names: The names of the rigid bodies to parse the data for.
+- log_level: The log level for the node. (DEBUG, INFO)
 
 You can run the node with the following command:
 
@@ -31,6 +31,10 @@ roslaunch multicast_parser multicast_parser.launch
 
 The node will publish the data to the following topics:
 
-- `/multicast_parser/Robot_1/pose`
-- `/multicast_parser/Robot_1/ground_pose`
-- `/multicast_parser/Robot_1/odom`
+- `/multicast_parser/<rigid_body_name>/pose` (geometry_msgs/PoseStamped)
+- `/multicast_parser/<rigid_body_name>/ground_pose` (geometry_msgs/PoseStamped)
+- `/multicast_parser/<rigid_body_name>/odom` (nav_msgs/Odometry)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

@@ -1,12 +1,11 @@
 multicast_group: '224.0.0.1'
 multicast_port: 9000
-server_address: '192.168.0.101'
+server_address: '192.168.0.101' # IP address of the machine running the Motive Tracker 2.0.2
 buffer_size: 4096
 
 # Rigid Body Names
 rigid_body_names:
   - Robot_1
-  - Robot_2
 
-
+# Log Level (DEBUG, INFO)
 log_level: "INFO"
