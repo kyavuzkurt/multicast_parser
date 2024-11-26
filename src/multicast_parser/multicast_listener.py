@@ -46,7 +46,7 @@ def multicast_listener(config_path):
 
     rospy.loginfo(f"Listening for multicast packets on {multicast_group}:{multicast_port}...")
 
-    log_level = config.get('log_level', 'INFO')
+    #log_level = config.get('log_level', 'INFO')
     buffer_size = config.get('buffer_size', 1024)
 
     try:

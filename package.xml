@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>multicast_parser</name>
-  <version>0.0.0</version>
-  <description>The multicast_parser package</description>
+  <version>1.0.0</version>
+  <description>ROS Package for parsing multicast data from Motive Tracker 2.0.2 to Appropriate Nodes </description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="kayeka@todo.todo">kayeka</maintainer>
+  <maintainer email="k.yavuzkurt1@gmail.com">K. Yavuz Kurt</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
   <!-- Commonly used license strings: -->
   <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>TODO</license>
+  <license>MIT</license>
 
 
   <!-- Url tags are optional, but multiple are allowed, one per tag -->

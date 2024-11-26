@@ -2,23 +2,44 @@
 
 import rospy
 import json
+import yaml
 from std_msgs.msg import String
 from geometry_msgs.msg import Pose, Pose2D
 from nav_msgs.msg import Odometry
 
 class MulticastDataParser:
-    def __init__(self):
+    def __init__(self, config_path):
         rospy.init_node('multicast_data_parser', anonymous=True)
+
+        # Load configuration
+        self.config = self.load_config(config_path)
+        if not self.config:
+            rospy.signal_shutdown("Failed to load configuration.")
 
         # Subscribers
         rospy.Subscriber('multicast_data', String, self.callback)
 
-        # Publishers
-        self.pose_pub = rospy.Publisher('/multicast_parser/Robot_1/pose', Pose, queue_size=10)
-        self.ground_pose_pub = rospy.Publisher('/multicast_parser/Robot_1/ground_pose', Pose2D, queue_size=10)
-        self.odom_pub = rospy.Publisher('/multicast_parser/Robot_1/Odom', Odometry, queue_size=10)
+        # Publishers dictionary
+        self.publishers = {}
+        rigid_bodies = self.config.get('rigid_body_names', [])
+        for rb in rigid_bodies:
+            self.publishers[rb] = {
+                'pose': rospy.Publisher(f'/multicast_parser/{rb}/pose', Pose, queue_size=10),
+                'ground_pose': rospy.Publisher(f'/multicast_parser/{rb}/ground_pose', Pose2D, queue_size=10),
+                'odom': rospy.Publisher(f'/multicast_parser/{rb}/Odom', Odometry, queue_size=10)
+            }
 
         rospy.loginfo("Multicast Data Parser Node Initialized.")
+
+    def load_config(self, config_path):
+        try:
+            with open(config_path, 'r') as file:
+                config = yaml.safe_load(file)
+                rospy.loginfo(f"Configuration loaded from {config_path}")
+                return config
+        except Exception as e:
+            rospy.logerr(f"Failed to load configuration file: {e}")
+            return None
 
     def callback(self, msg):
         try:
@@ -27,23 +48,34 @@ class MulticastDataParser:
 
             # Iterate through each key-value pair in the received data
             for path, payload in data.items():
-                if path == '/mocap_node/Robot_1/pose':
+                # Extract rigid body name from the path
+                parts = path.split('/')
+                if len(parts) < 4:
+                    rospy.logwarn(f"Invalid path format: {path}")
+                    continue
+                rb_name = parts[3]
+
+                if rb_name not in self.publishers:
+                    rospy.logwarn(f"Unknown rigid body: {rb_name}")
+                    continue
+
+                if path == f'/mocap_node/{rb_name}/pose':
                     pose_msg = self.parse_pose(payload)
                     if pose_msg:
-                        self.pose_pub.publish(pose_msg)
-                        rospy.loginfo("Published Pose data.")
+                        self.publishers[rb_name]['pose'].publish(pose_msg)
+                        rospy.loginfo(f"Published Pose data for {rb_name}.")
                 
-                elif path == '/mocap_node/Robot_1/ground_pose':
+                elif path == f'/mocap_node/{rb_name}/ground_pose':
                     pose2d_msg = self.parse_pose2d(payload)
                     if pose2d_msg:
-                        self.ground_pose_pub.publish(pose2d_msg)
-                        rospy.loginfo("Published Pose2D data.")
+                        self.publishers[rb_name]['ground_pose'].publish(pose2d_msg)
+                        rospy.loginfo(f"Published Pose2D data for {rb_name}.")
 
-                elif path == '/mocap_node/Robot_1/Odom':
+                elif path == f'/mocap_node/{rb_name}/Odom':
                     odom_msg = self.parse_odometry(payload)
                     if odom_msg:
-                        self.odom_pub.publish(odom_msg)
-                        rospy.loginfo("Published Odometry data.")
+                        self.publishers[rb_name]['odom'].publish(odom_msg)
+                        rospy.loginfo(f"Published Odometry data for {rb_name}.")
                 else:
                     rospy.logwarn(f"Received unknown path: {path}")
 
@@ -54,56 +86,24 @@ class MulticastDataParser:
 
     def parse_pose(self, payload):
         try:
-            pose_msg = Pose()
-            pose_msg.position.x = payload['position']['x']
-            pose_msg.position.y = payload['position']['y']
-            pose_msg.position.z = payload['position']['z']
-            pose_msg.orientation.x = payload['orientation']['x']
-            pose_msg.orientation.y = payload['orientation']['y']
-            pose_msg.orientation.z = payload['orientation']['z']
-            pose_msg.orientation.w = payload['orientation']['w']
-            return pose_msg
+           #TODO
+           pass
         except KeyError as e:
             rospy.logerr(f"Missing key in Pose data: {e}")
             return None
 
     def parse_pose2d(self, payload):
         try:
-            pose2d_msg = Pose2D()
-            pose2d_msg.x = payload['x']
-            pose2d_msg.y = payload['y']
-            pose2d_msg.theta = payload['theta']
-            return pose2d_msg
+           #TODO
+           pass
         except KeyError as e:
             rospy.logerr(f"Missing key in Pose2D data: {e}")
             return None
 
     def parse_odometry(self, payload):
         try:
-            odom_msg = Odometry()
-            odom_msg.header.stamp = rospy.Time.now()
-            odom_msg.header.frame_id = payload.get('frame_id', 'odom')
-
-            # Position
-            odom_msg.pose.pose.position.x = payload['pose']['position']['x']
-            odom_msg.pose.pose.position.y = payload['pose']['position']['y']
-            odom_msg.pose.pose.position.z = payload['pose']['position']['z']
-
-            # Orientation
-            odom_msg.pose.pose.orientation.x = payload['pose']['orientation']['x']
-            odom_msg.pose.pose.orientation.y = payload['pose']['orientation']['y']
-            odom_msg.pose.pose.orientation.z = payload['pose']['orientation']['z']
-            odom_msg.pose.pose.orientation.w = payload['pose']['orientation']['w']
-
-            # Velocity
-            odom_msg.twist.twist.linear.x = payload['twist']['linear']['x']
-            odom_msg.twist.twist.linear.y = payload['twist']['linear']['y']
-            odom_msg.twist.twist.linear.z = payload['twist']['linear']['z']
-            odom_msg.twist.twist.angular.x = payload['twist']['angular']['x']
-            odom_msg.twist.twist.angular.y = payload['twist']['angular']['y']
-            odom_msg.twist.twist.angular.z = payload['twist']['angular']['z']
-
-            return odom_msg
+           #TODO
+           pass
         except KeyError as e:
             rospy.logerr(f"Missing key in Odometry data: {e}")
             return None
@@ -112,5 +112,6 @@ class MulticastDataParser:
         rospy.spin()
 
 if __name__ == '__main__':
-    parser = MulticastDataParser()
+    config_path = rospy.get_param('~config', 'config/config.yaml')
+    parser = MulticastDataParser(config_path)
     parser.run()
